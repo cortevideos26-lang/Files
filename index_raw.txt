@@ -1,0 +1,1778 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Extrator de Dados - Consultoria</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --text-color: #1f2937;
+            --title-color: #111827;
+            --white: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --card-border: #e5e7eb;
+            --pre-text: #374151;
+            --textarea-bg: rgba(255, 255, 255, 0.9);
+            --drag-bg: rgba(255, 255, 255, 0.7);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+            --glass-bg: rgba(31, 41, 55, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-color: #f3f4f6;
+            --title-color: #f9fafb;
+            --card-bg: rgba(31, 41, 55, 0.95);
+            --card-border: #374151;
+            --pre-text: #e5e7eb;
+            --textarea-bg: rgba(17, 24, 39, 0.8);
+            --drag-bg: rgba(31, 41, 55, 0.7);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-gradient);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 40px 20px;
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: var(--title-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 15px;
+            border-radius: 12px;
+            background: var(--textarea-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.2);
+        }
+
+        .btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.2s;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-copy {
+            background: #10b981;
+        }
+
+        .btn-copy:hover {
+            background: #059669;
+        }
+
+        .btn-whatsapp {
+            background: #25D366;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128C7E;
+        }
+
+        .btn-pdf {
+            background: #ef4444;
+        }
+
+        .btn-pdf:hover {
+            background: #dc2626;
+        }
+
+        .lgpd-mode .data-card pre {
+            filter: blur(5px);
+            transition: filter 0.3s ease;
+        }
+
+        .lgpd-mode .data-card:hover pre {
+            filter: blur(0px);
+        }
+
+        .output-container {
+            margin-top: 30px;
+            display: none;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .data-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @media (min-width: 768px) {
+            .data-card {
+                flex-direction: row;
+                gap: 20px;
+                align-items: stretch;
+            }
+
+            .card-content {
+                flex: 1;
+                border-right: 1px solid var(--card-border);
+                padding-right: 20px;
+                overflow-x: auto;
+            }
+
+            .card-actions {
+                width: 220px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+                justify-content: center;
+            }
+
+            .card-actions .btn {
+                margin: 0;
+            }
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            line-height: 1.6;
+            margin: 0;
+            color: var(--pre-text);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            .card-actions {
+                margin-top: 15px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+
+        /* Loader Styles */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .pagination button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .pagination button:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+
+        /* Top Bar Controls */
+        .top-controls {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .control-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display: none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5px;
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            background-color: white;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        input:checked+.slider {
+            background-color: #4f46e5;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.4);
+        }
+
+        #lgpdCheckbox:checked+.slider {
+            background-color: #ef4444;
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 8px rgba(239, 68, 68, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+            }
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        .icon {
+            font-size: 14px;
+            z-index: 1;
+        }
+
+        /* Tooltip Helper */
+        .help-tooltip {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(156, 163, 175, 0.4);
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            font-size: 14px;
+            color: var(--title-color);
+            cursor: help;
+        }
+
+        .help-tooltip .tooltip-text {
+            visibility: hidden;
+            width: 280px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            text-align: center;
+            border-radius: 10px;
+            padding: 12px;
+            position: absolute;
+            z-index: 10;
+            bottom: 135%;
+            margin-left: -250px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--primary-color);
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-weight: 500;
+            font-size: 13px;
+            line-height: 1.5;
+            pointer-events: none;
+        }
+
+        @media (max-width: 600px) {
+            .help-tooltip .tooltip-text {
+                margin-left: -200px;
+                width: 240px;
+            }
+        }
+
+        .help-tooltip:hover .tooltip-text,
+        .help-tooltip:active .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Floating Controls Container */
+        .floating-controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 1000;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 12px;
+            border-radius: 18px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: slideInRight 0.6s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .floating-controls:hover {
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .floating-controls .control-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            min-width: 140px;
+        }
+
+        .control-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-color);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Mobile adjustments for floating controls */
+        @media (max-width: 600px) {
+            .floating-controls {
+                top: auto;
+                bottom: 20px;
+                right: 20px;
+                flex-direction: row;
+                padding: 10px 15px;
+            }
+
+            .floating-controls .control-item {
+                min-width: auto;
+            }
+
+            .control-label {
+                display: none;
+            }
+        }
+
+        /* Filter Section Enhancements */
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: var(--glass-bg);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            margin-top: 15px;
+        }
+
+        .filter-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .filter-field label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-color);
+            opacity: 0.7;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 4px;
+        }
+
+        .filter-input {
+            width: 100%;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+            background: var(--textarea-bg);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .search-main {
+            grid-column: 1 / -1;
+            position: relative;
+        }
+
+        .search-main .filter-input {
+            padding-left: 40px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 36px;
+            opacity: 0.5;
+            font-size: 18px;
+        }
+
+        @media (max-width: 600px) {
+            .filters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+
+<body>
+
+    <!-- Floating Control Center -->
+    <div class="floating-controls">
+        <div class="control-item">
+            <span class="control-label">ðŸŒ“ Tema</span>
+            <label class="theme-switch" for="checkbox">
+                <input type="checkbox" id="checkbox" />
+                <div class="slider round">
+                    <span class="icon">â˜€ï¸</span>
+                    <span class="icon">ðŸŒ™</span>
+                </div>
+            </label>
+        </div>
+        <div class="control-item">
+            <span class="control-label">ðŸ‘ï¸ LGPD</span>
+            <label class="theme-switch" for="lgpdCheckbox">
+                <input type="checkbox" id="lgpdCheckbox" />
+                <div class="slider round">
+                </div>
+            </label>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>ðŸ“„ Extrator de Dados em Massa</h1>
+
+        <div class="input-group" style="position: relative;">
+            <textarea id="inputData"
+                placeholder="Cole aqui as linhas de dados... (VocÃª tambÃ©m pode carregar arquivos no clipe ðŸ“Ž)"
+                style="padding-bottom: 50px;"></textarea>
+
+            <div style="position: absolute; bottom: 20px; right: 20px; display: flex; gap: 10px;">
+                <button class="btn" onclick="limparBancoDados()" title="Limpar Arquivos Carregados"
+                    style="background: #ef4444; width: auto; padding: 6px 12px; font-size: 13px;">
+                    ðŸ§¹ <span>Limpar</span>
+                </button>
+                <button class="btn" onclick="exportarBanco()" title="Exportar Dados Locais para Equipe"
+                    style="background: #f59e0b; width: auto; padding: 6px 12px; font-size: 13px;">
+                    ðŸ“¦ <span>Exportar Base</span>
+                </button>
+                <label for="importDbInput"
+                    style="background: #3b82f6; color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.2s;">
+                    ðŸ“¥ <span>Importar Base</span>
+                    <input type="file" id="importDbInput" accept=".json" style="display: none;" />
+                </label>
+                <label for="csvFileInput"
+                    style="background: var(--primary-color); color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: background 0.2s;">
+                    ðŸ“Ž <span>Anexar Arquivo(s) (CSV, TXT, Excel)</span>
+                    <input type="file" id="csvFileInput" accept=".csv, .txt, .xlsx, .xls" multiple
+                        style="display: none;" />
+                </label>
+            </div>
+        </div>
+
+        <details
+            style="margin-top: 25px; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; background: var(--glass-bg); cursor: pointer; transition: all 0.3s; margin-bottom: 20px;">
+            <summary
+                style="color: var(--title-color); font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    âš™ï¸ Personalizar Mensagem de WhatsApp
+                </div>
+                <!-- BotÃ£o de ajuda / tooltip interativo -->
+                <div class="help-tooltip" onclick="event.preventDefault(); event.stopPropagation();">
+                    ?
+                    <span class="tooltip-text">
+                        <b>Dica MÃ¡gica:</b><br><br>
+                        VocÃª pode alterar toda essa mensagem do seu jeito!<br>
+                        Basta NÃƒO apagar as palavras entre <b>{chaves}</b>. O sistema substituirÃ¡ as chaves pela
+                        informaÃ§Ã£o real de cada ficha gerada!
+                    </span>
+                </div>
+            </summary>
+
+            <div style="margin-top: 15px;">
+                <textarea id="whatsappTemplate" style="height: 180px; font-size: 13px;"
+                    placeholder="Configure o texto padrÃ£o aqui...">*OlÃ¡, {nome}* tudo bem com vocÃª?
+
+Me chamo *MICHELLE REIS MOREIRA* trabalho aqui no *Instituto Nacional do Seguro Social - INSS*.
+
+Estou entrando em contato pois tivemos um problema na atualizaÃ§Ã£o cadastral dos seus dados e o Sistema exigiu uma nova *Prova de Vida*.
+
+VocÃª consegue fazer rapidinho pelo aplicativo, sÃ³ preciso saber um horÃ¡rio para que um de nossos servidores pÃºblicos entre em contato com vocÃª para te explicar melhor.
+
+ðŸ“Œ *DADOS DO BENEFICIÃRIO:*
+ðŸ†” *CPF:* {cpf}
+ðŸ“„ *BENEFÃCIO:* {nb}
+ðŸ’° *VALOR DO BENEFÃCIO:* {valor}
+ðŸ“ *ENDEREÃ‡O:* {endereco}
+{emails}
+{telefones}</textarea>
+                <div
+                    style="font-size: 12px; color: var(--text-color); margin-top: 8px; opacity: 0.9; text-align: center;">
+                    VariÃ¡veis disponÃ­veis: <strong>{nome}</strong>, <strong>{cpf}</strong>, <strong>{nb}</strong>,
+                    <strong>{valor}</strong>, <strong>{endereco}</strong>, <strong>{emails}</strong>,
+                    <strong>{telefones}</strong>
+                </div>
+            </div>
+        </details>
+
+        <details
+            style="margin-top: 10px; border: 1px solid var(--glass-border); padding: 15px; border-radius: 12px; background: var(--glass-bg); cursor: pointer; transition: all 0.3s; margin-bottom: 20px;">
+            <summary
+                style="color: var(--title-color); font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: space-between; user-select: none;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    ðŸ“„ Personalizar Documento PDF
+                </div>
+                <div class="help-tooltip" onclick="event.preventDefault(); event.stopPropagation();">
+                    ?
+                    <span class="tooltip-text">
+                        <b>Controle Total:</b><br><br>
+                        Aqui vocÃª manda na estrutura do documento.<br>
+                        VocÃª pode colocar linhas inteiras entre <b>*asteriscos*</b> para deixÃ¡-las em
+                        <b>negrito</b>.<br>Use os links abaixo para trocar os logotipos oficiais!
+                    </span>
+                </div>
+            </summary>
+
+            <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
+                <div>
+                    <label
+                        style="font-size: 13px; font-weight: 600; color: var(--text-color); margin-bottom: 5px; display: block;">ðŸ”–
+                        TÃ­tulo do PDF:</label>
+                    <input type="text" id="pdfTitle" value="BLOQUEIO DE BENEFÃCIO"
+                        style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color); font-family: 'Inter', sans-serif; box-sizing: border-box;" />
+                </div>
+
+                <div>
+                    <label
+                        style="font-size: 13px; font-weight: 600; color: var(--text-color); margin-bottom: 5px; display: block;">ðŸ“
+                        Texto e Estrutura Principal:</label>
+                    <textarea id="pdfTemplate"
+                        style="height: 380px; font-size: 13px; width: 100%; padding: 15px; border-radius: 12px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color); font-family: 'Inter', sans-serif; resize: vertical; box-sizing: border-box;"
+                        placeholder="Configure o texto corpo do PDF aqui...">NOME: {nome}
+CPF: {cpf}
+VALOR: {valor}
+AGÃŠNCIA: {agencia}   CONTA: {conta}
+
+*BLOQUEIO AS 17:50 DE {data_ontem} (HORÃRIO DE BRASÃLIA)*
+
+Informamos que a Prova de Vida foi exigida pelo SISTEMA, estando o beneficiÃ¡rio devidamente irregular junto ao sistema.
+
+Dessa forma, nÃ£o serÃ¡ realizado o Pagamento do BENEFÃCIO, contado a partir da data da realizaÃ§Ã£o do BLOQUEIO.
+
+Ressaltamos que, com a comprovaÃ§Ã£o efetuada, o benefÃ­cio seguirÃ¡ sendo pago normalmente, sem bloqueios ou interrupÃ§Ãµes, garantindo a continuidade do recebimento dentro da regularidade prevista.
+
+Em caso de alteraÃ§Ã£o cadastral ou solicitaÃ§Ã£o do Ã³rgÃ£o responsÃ¡vel, o beneficiÃ¡rio poderÃ¡ ser orientado a apresentar nova atualizaÃ§Ã£o, porÃ©m, no momento, nÃ£o hÃ¡ necessidade de nova comprovaÃ§Ã£o</textarea>
+                </div>
+
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 240px;">
+                        <label
+                            style="font-size: 12px; font-weight: 600; color: var(--text-color); margin-bottom: 5px; display: block;">ðŸ–¼ï¸
+                            Logo Topo (URL e Tamanho)</label>
+                        <input type="text" id="pdfLogoTop"
+                            value="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Coat_of_arms_of_Brazil.svg/200px-Coat_of_arms_of_Brazil.svg.png"
+                            style="width: 100%; margin-bottom: 5px; padding: 8px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color); font-size: 11px; box-sizing: border-box;" />
+                        <div style="display: flex; gap: 5px;">
+                            <input type="number" id="topW" value="30" placeholder="Larg(W)"
+                                title="Largura da Imagem (X)"
+                                style="flex: 1; padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color);" />
+                            <input type="number" id="topH" value="30" placeholder="Alt(H)" title="Altura da Imagem (Y)"
+                                style="flex: 1; padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color);" />
+                        </div>
+                    </div>
+                    <div style="flex: 1; min-width: 240px;">
+                        <label
+                            style="font-size: 12px; font-weight: 600; color: var(--text-color); margin-bottom: 5px; display: block;">ðŸ–¼ï¸
+                            Logo RodapÃ© (URL e Tamanho)</label>
+                        <input type="text" id="pdfLogoBottom"
+                            value="https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Banco_do_Brasil_logo.svg/320px-Banco_do_Brasil_logo.svg.png"
+                            style="width: 100%; margin-bottom: 5px; padding: 8px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color); font-size: 11px; box-sizing: border-box;" />
+                        <div style="display: flex; gap: 5px;">
+                            <input type="number" id="botW" value="40" placeholder="Larg(W)"
+                                title="Largura da Imagem (X)"
+                                style="flex: 1; padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color);" />
+                            <input type="number" id="botH" value="10" placeholder="Alt(H)" title="Altura da Imagem (Y)"
+                                style="flex: 1; padding: 6px; font-size: 11px; border-radius: 6px; border: 1px solid var(--glass-border); background: var(--textarea-bg); color: var(--text-color);" />
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
+                    <div style="font-size: 12px; color: var(--text-color); opacity: 0.9;">
+                        Dica: Use <strong>{data_ontem}</strong> ou <strong>{data_hoje}</strong> para automatizar datas!
+                    </div>
+                    <button class="btn" style="background:#f59e0b; width: auto; font-size: 13px; padding: 8px 16px;"
+                        onclick="previewDummyPDF()">
+                        ðŸ‘ï¸ PrÃ©-visualizar Modelo
+                    </button>
+                </div>
+
+                <div
+                    style="font-size: 12px; color: var(--text-color); margin-top: 5px; opacity: 0.9; text-align: center;">
+                    Dica: Use <strong>{data_ontem}</strong> ou <strong>{data_hoje}</strong> para injetar dias de forma
+                    automatizada!
+                </div>
+            </div>
+        </details>
+
+        </details>
+
+        <!-- BotÃµes de Salvar Layout -->
+        <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+            <button class="btn" style="flex: 1; background: #6366f1; padding: 10px;" onclick="salvarLayout()">
+                ðŸ’¾ Salvar Textos Atuais (MemÃ³ria Local)
+            </button>
+            <button class="btn" style="flex: 1; background: #8b5cf6; padding: 10px;" onclick="carregarLayout()">
+                ðŸ“‚ Carregar Textos Salvos
+            </button>
+        </div>
+
+        <button class="btn" id="btnProcessar" onclick="processData()" style="margin-bottom: 20px;">
+            <span>Processar Dados</span>
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+            </svg>
+        </button>
+
+        <div class="loader" id="loader"></div>
+
+        <!-- Dashboard e Filtros de Busca AvanÃ§ada -->
+        <div id="dashboardContainer" style="display: none; margin-bottom: 25px;">
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+                <div
+                    style="flex: 1; min-width: 150px; background: var(--glass-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 26px; font-weight: 800; color: var(--primary-color);" id="statTotal">0</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-color); opacity: 0.8;">Fichas
+                        CompatÃ­veis</div>
+                </div>
+                <div
+                    style="flex: 1; min-width: 150px; background: var(--glass-bg); padding: 15px; border-radius: 12px; text-align: center; border: 1px solid var(--glass-border); box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                    <div style="font-size: 26px; font-weight: 800; color: #f59e0b;" id="statContatos">0</div>
+                    <div style="font-size: 12px; font-weight: 600; color: var(--text-color); opacity: 0.8;">Com Contato
+                        Validado</div>
+                </div>
+            </div>
+
+            <div class="filters-grid"></div>
+            <div class="filter-field search-main">
+                <label>ðŸ” Buscar na Base</label>
+                <span class="search-icon">ðŸ”</span>
+                <input type="text" id="filterBusca" placeholder="Pesquisar por Nome Completo ou CPF..."
+                    class="filter-input" oninput="applyFilters()" />
+            </div>
+
+            <div class="filter-field">
+                <label>ðŸ¢ Fonte dos Dados</label>
+                <select id="filterFonte" class="filter-input" onchange="applyFilters()">
+                    <option value="">Todas as Fontes</option>
+                    <option value="INSS">Apenas INSS</option>
+                    <option value="SIAPE">Apenas SIAPE</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>ðŸ—ºï¸ Estado (UF)</label>
+                <select id="filterUF" class="filter-input" onchange="applyFilters()">
+                    <option value="">Todos os Estados</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>ðŸ¦ InstituiÃ§Ã£o BancÃ¡ria</label>
+                <select id="filterBanco" class="filter-input" onchange="applyFilters()">
+                    <option value="">Todos os Bancos</option>
+                </select>
+            </div>
+
+            <div class="filter-field">
+                <label>ðŸ’° Valor MÃ­nimo</label>
+                <input type="number" id="filterRendaMin" placeholder="R$ 0,00" class="filter-input"
+                    oninput="applyFilters()" />
+            </div>
+
+            <div class="filter-field">
+                <label>ðŸ’° Valor MÃ¡ximo</label>
+                <input type="number" id="filterRendaMax" placeholder="R$ No limit" class="filter-input"
+                    oninput="applyFilters()" />
+            </div>
+        </div>
+    </div>
+
+    <div class="output-container" id="outputContainer">
+        <!-- Cards em massa aparecerÃ£o aqui -->
+    </div>
+
+    <script>
+        window.processedDataArray = [];
+        window.filteredDataArray = [];
+        let currentPage = 1;
+        const ITEMS_PER_PAGE = 15;
+
+        // INDEXED_DB PERSISTENCE LOGIC
+        const DB_NAME = 'ExtratorDataDB';
+        const STORE_NAME = 'csvData';
+
+        function saveRawData(content) {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = e => { e.target.result.createObjectStore(STORE_NAME); };
+            request.onsuccess = e => {
+                const db = e.target.result;
+                const tx = db.transaction(STORE_NAME, "readwrite");
+                tx.objectStore(STORE_NAME).put(content, "rawData");
+            };
+        }
+
+        function loadRawData() {
+            const request = indexedDB.open(DB_NAME, 1);
+            request.onupgradeneeded = e => { e.target.result.createObjectStore(STORE_NAME); };
+            request.onsuccess = e => {
+                const db = e.target.result;
+                // If the store exists, fetch. If not, maybe it was just created.
+                if (db.objectStoreNames.contains(STORE_NAME)) {
+                    const tx = db.transaction(STORE_NAME, "readonly");
+                    const store = tx.objectStore(STORE_NAME);
+                    const req = store.get("rawData");
+                    req.onsuccess = () => {
+                        if (req.result) {
+                            document.getElementById('inputData').value = req.result;
+                            processData();
+                        }
+                    }
+                }
+            };
+        }
+
+        function limparBancoDados() {
+            if (!confirm("Tem certeza que deseja limpar tudo? O progresso salvo de dados e tabelas serÃ¡ apagado.")) return;
+            document.getElementById('inputData').value = '';
+            window.processedDataArray = [];
+            window.filteredDataArray = [];
+            document.getElementById('outputContainer').innerHTML = '';
+            document.getElementById('dashboardContainer').style.display = 'none';
+            saveRawData('');
+        }
+
+        function exportarBanco() {
+            const content = document.getElementById('inputData').value;
+            if (!content) {
+                alert("NÃ£o hÃ¡ dados na sua base atual para exportar.");
+                return;
+            }
+            const blob = new Blob([JSON.stringify({ data: content })], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `BASE_EXPORTADA_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert("âœ… Base exportada com sucesso! VocÃª pode enviar este arquivo JSON para seus colegas.");
+        }
+
+        function salvarLayout() {
+            const config = {
+                whatsTemplate: document.getElementById('whatsappTemplate').value,
+                pdfTitle: document.getElementById('pdfTitle').value,
+                pdfTemplate: document.getElementById('pdfTemplate').value,
+                logoTop: document.getElementById('pdfLogoTop').value,
+                logoBottom: document.getElementById('pdfLogoBottom').value,
+                topW: document.getElementById('topW').value,
+                topH: document.getElementById('topH').value,
+                botW: document.getElementById('botW').value,
+                botH: document.getElementById('botH').value
+            };
+            localStorage.setItem('geradorFichaLayout', JSON.stringify(config));
+            alert("âœ… Seus textos e configuraÃ§Ãµes foram salvos no navegador com sucesso!");
+        }
+
+        function carregarLayout() {
+            const saved = localStorage.getItem('geradorFichaLayout');
+            if (!saved) {
+                alert("Nenhum layout salvo anteriormente foi encontrado.");
+                return;
+            }
+            try {
+                const config = JSON.parse(saved);
+                if (config.whatsTemplate) document.getElementById('whatsappTemplate').value = config.whatsTemplate;
+                if (config.pdfTitle) document.getElementById('pdfTitle').value = config.pdfTitle;
+                if (config.pdfTemplate) document.getElementById('pdfTemplate').value = config.pdfTemplate;
+                if (config.logoTop) document.getElementById('pdfLogoTop').value = config.logoTop;
+                if (config.logoBottom) document.getElementById('pdfLogoBottom').value = config.logoBottom;
+                if (config.topW) document.getElementById('topW').value = config.topW;
+                if (config.topH) document.getElementById('topH').value = config.topH;
+                if (config.botW) document.getElementById('botW').value = config.botW;
+                if (config.botH) document.getElementById('botH').value = config.botH;
+                alert("ðŸ“‚ Layouts restaurados com sucesso!");
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function downloadAllTxt(onlyCurrentPage = false) {
+            let dataToDownload = window.filteredDataArray;
+            let fileName = 'fichas_filtradas_extrator.txt';
+
+            if (onlyCurrentPage) {
+                const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+                const endIndex = startIndex + ITEMS_PER_PAGE;
+                dataToDownload = window.filteredDataArray.slice(startIndex, endIndex);
+                fileName = `fichas_pagina_${currentPage}.txt`;
+            }
+
+            if (!dataToDownload || dataToDownload.length === 0) return;
+
+            // Mapeia as fichas formatadas e entÃ£o as une com o separador exigido
+            const contentPieces = dataToDownload.map(data => generateFinalText(data).trim());
+            const fullText = contentPieces.join('\n\n---------------------------------\n');
+
+            const blob = new Blob([fullText + '\n'], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `fichas_extrator.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Theme Switcher Logic
+        const toggleSwitch = document.getElementById('checkbox');
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+            }
+        }
+        if (toggleSwitch) toggleSwitch.addEventListener('change', switchTheme, false);
+
+        // LGPD Mode Switcher Logic
+        const lgpdToggle = document.getElementById('lgpdCheckbox');
+        function switchLGPD(e) {
+            const container = document.getElementById('outputContainer');
+            if (e.target.checked) {
+                container.classList.add('lgpd-mode');
+            } else {
+                container.classList.remove('lgpd-mode');
+            }
+        }
+        lgpdToggle.addEventListener('change', switchLGPD, false);
+
+        document.addEventListener("DOMContentLoaded", () => {
+            // Removido o carregamento automÃ¡tico para que o site inicie vazio
+            // loadRawData(); 
+
+            const importInput = document.getElementById('importDbInput');
+            importInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = function (evt) {
+                    try {
+                        const parsed = JSON.parse(evt.target.result);
+                        if (parsed && parsed.data) {
+                            document.getElementById('inputData').value = parsed.data;
+                            alert("âœ… Base Importada com sucesso! Processando...");
+                            processData();
+                        } else {
+                            alert("Arquivo invÃ¡lido. Certifique-se de usar um JSON exportado por outro colega neste sistema.");
+                        }
+                    } catch (err) {
+                        alert("Erro ao ler o arquivo JSON.");
+                    }
+                    importInput.value = ''; // reseta
+                }
+                reader.readAsText(file);
+            });
+
+            const fileInput = document.getElementById('csvFileInput');
+            fileInput.addEventListener('change', async function (e) {
+                const files = e.target.files;
+                if (!files || files.length === 0) return;
+
+                let combinedContents = document.getElementById('inputData').value;
+                if (combinedContents.trim() !== '') combinedContents += "\n";
+
+                const readPromises = Array.from(files).map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+                        reader.onload = function (evt) {
+                            if (isExcel) {
+                                const data = new Uint8Array(evt.target.result);
+                                const workbook = XLSX.read(data, { type: 'array' });
+                                const firstSheetName = workbook.SheetNames[0];
+                                const worksheet = workbook.Sheets[firstSheetName];
+                                // Converter para CSV usando tabulaÃ§Ã£o como separador para manter compatibilidade com processLine
+                                const csv = XLSX.utils.sheet_to_csv(worksheet, { FS: "\t" });
+                                resolve(csv);
+                            } else {
+                                resolve(evt.target.result);
+                            }
+                        };
+
+                        if (isExcel) {
+                            reader.readAsArrayBuffer(file);
+                        } else {
+                            reader.readAsText(file);
+                        }
+                    });
+                });
+
+                const results = await Promise.all(readPromises);
+                combinedContents += results.join("\n");
+
+                document.getElementById('inputData').value = combinedContents;
+                processData();
+            });
+        });
+
+        function processLine(line) {
+            const cleanLine = line.replace(/(^"|"$)/g, '').replace(/""/g, '"');
+            let parts = cleanLine.split('\t');
+            if (parts.length < 5) parts = cleanLine.split(';');
+            if (parts.length < 5) return null;
+
+            const isSiape = cleanLine.toUpperCase().includes('SIAPE');
+
+            if (isSiape) {
+                let matricula = parts[0] ? parts[0].trim() : "";
+                let rawCpf = (parts[1] || "").replace(/\D/g, '').replace(/^0+/, '');
+                let cpfFormatado = rawCpf;
+                if (rawCpf.length > 2) {
+                    cpfFormatado = rawCpf.slice(0, -2) + "-" + rawCpf.slice(-2);
+                }
+
+                let nome = parts[2] ? parts[2].trim() : "";
+                let nasc = parts[4] ? parts[4].trim() : "";
+                let cargo = parts[7] ? parts[7].trim() : "";
+                let valorCru = parts[9] ? parts[9].trim() : "";
+
+                let banco = parts[13] ? parts[13].trim() : "";
+                let agencia = parts[14] ? parts[14].trim() : "";
+                let conta = parts[15] ? parts[15].trim() : "";
+
+                let uf = parts[16] ? parts[16].trim() : "";
+                let cidade = parts[17] ? parts[17].trim() : "";
+                let bairro = parts[18] ? parts[18].trim() : "";
+                let rua = parts[19] ? parts[19].trim() : "";
+                let cep = parts[20] ? parts[20].trim() : "";
+
+                let rawPhones = [];
+                if (parts[21]) rawPhones.push(parts[21].replace(/\D/g, ''));
+                if (parts[22]) rawPhones.push(parts[22].replace(/\D/g, ''));
+                if (parts[23]) rawPhones.push(parts[23].replace(/\D/g, ''));
+                let phones = [...new Set(rawPhones.filter(p => p.length >= 8))];
+
+                return {
+                    isSiape: true,
+                    nome: nome,
+                    cpf: cpfFormatado,
+                    nb: matricula,
+                    nascimento: nasc,
+                    cargo: cargo,
+                    valor: valorCru ? "R$ " + valorCru : "",
+                    banco: banco,
+                    agencia: agencia,
+                    conta: conta,
+                    ufRaw: uf,
+                    cidade: cidade,
+                    bairro: bairro,
+                    rua: rua,
+                    cep: cep,
+                    telefones: phones,
+                    valorRaw: parseFloat(valorCru.replace(',', '.')) || 0
+                };
+            } else {
+                let nb = parts[0] ? parts[0].trim() : "";
+                let rawCpf = parts[1] || "";
+                let cpfDigits = rawCpf.replace(/\D/g, '');
+                let cpfFormatado = cpfDigits;
+                if (cpfDigits.length === 11) {
+                    cpfFormatado = cpfDigits.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");
+                }
+
+                let nome = parts[2] ? parts[2].trim() : "";
+                let valorCru = parts[6] ? parts[6].trim() : "";
+                let nasc = parts[7] ? parts[7].trim() : "";
+                let especie = parts[10] ? parts[10].trim() : "";
+                let banco = parts[12] ? parts[12].replace(/^0+/, '').trim() : "";
+                let agencia = parts[13] ? parts[13].trim() : "";
+                let conta = parts[14] ? parts[14].trim() : "";
+                let municipio = parts[15] ? parts[15].trim() : "";
+                let uf = parts[16] ? parts[16].trim() : "";
+                let bairro = parts[17] ? parts[17].trim() : "";
+                let rua = parts[18] ? parts[18].trim() : "";
+
+                let enderecoCompleto = "";
+                if (rua && rua !== "NAO" && rua !== "") {
+                    enderecoCompleto += rua;
+                    if (bairro && bairro !== "NAO" && bairro !== "") enderecoCompleto += ", " + bairro;
+                    if (municipio && municipio !== "NAO" && municipio !== "") enderecoCompleto += " - " + municipio;
+                    if (uf && uf !== "NAO" && uf !== "") enderecoCompleto += " " + uf;
+                }
+
+                let rawPhones = [];
+                if (parts[29]) rawPhones.push(parts[29].replace(/\D/g, ''));
+                if (parts[30]) rawPhones.push(parts[30].replace(/\D/g, ''));
+                if (parts[31]) rawPhones.push(parts[31].replace(/\D/g, ''));
+                let phones = [...new Set(rawPhones.filter(p => p.length >= 8))];
+
+                let rawEmails = [];
+                if (parts[32] && parts[32].includes("@")) rawEmails.push(parts[32].trim());
+                if (parts[33] && parts[33].includes("@")) rawEmails.push(parts[33].trim());
+                if (parts[34] && parts[34].includes("@")) rawEmails.push(parts[34].trim());
+
+                return {
+                    isSiape: false,
+                    nb: nb,
+                    cpf: cpfFormatado,
+                    nome: nome,
+                    valor: valorCru ? "R$ " + valorCru : "",
+                    nascimento: nasc,
+                    especie: especie,
+                    banco: banco,
+                    agencia: agencia,
+                    conta: conta,
+                    endereco: enderecoCompleto,
+                    emails: rawEmails,
+                    telefones: phones,
+                    ufRaw: uf,
+                    valorRaw: parseFloat(valorCru.replace('.', '').replace(',', '.')) || 0
+                };
+            }
+        }
+
+                function generateFinalText(data) {
+            let finalText = "";
+            if (data.isSiape) {
+                if (data.nome) finalText += `?? **NOME:** ${data.nome}\n`;
+                if (data.cpf) finalText += `?? **CPF:** ${data.cpf}\n`;
+                if (data.nascimento) finalText += `?? **NASCIMENTO:** ${data.nascimento}\n`;
+                if (data.cargo) finalText += `CARGO: ${data.cargo}\n`;
+                if (data.valor) finalText += `?? **VALOR SALARIO:** ${data.valor}\n`;
+                
+                finalText += `?? **BANCO:** ${data.banco || "-"} | **AG:** ${data.agencia || "-"} | **CC:** ${data.conta || "-"}\n`;
+                
+                let end = `?? **ENDEREÇO:** `;
+                if (data.bairro) end += `${data.bairro}, `;
+                if (data.cidade) end += `"${data.cidade}" `;
+                if (data.rua) end += `${data.rua} `;
+                end += `- (${data.cep ? data.cep : "em branco pois não tem cep"}) `;
+                if (data.ufRaw) end += `${data.ufRaw}`;
+                finalText += end + `\n`;
+
+                if (data.telefones && data.telefones.length > 0) {
+                    finalText += `TELEFONES:\n\n`;
+                    data.telefones.forEach(p => finalText += `${p}\n`);
+                }
+            } else {
+                if (data.nome) finalText += `?? **NOME:** ${data.nome}\n`;
+                if (data.cpf) finalText += `?? **CPF:** ${data.cpf}\n`;
+                if (data.nascimento) finalText += `?? **NASCIMENTO:** ${data.nascimento}\n`;
+                if (data.valor) finalText += `?? **VALOR BENEFÍCIO:** ${data.valor}\n`;
+                if (data.banco || data.agencia || data.conta) {
+                    finalText += `?? **BANCO:** ${data.banco || "-"} | **AG:** ${data.agencia || "-"} | **CC:** ${data.conta || "-"}\n`;
+                }
+                if (data.especie) finalText += `?? **ESPÉCIE:** ${data.especie}\n`;
+                if (data.endereco) finalText += `?? **ENDEREÇO:** ${data.endereco}\n\n`;
+                if (data.emails && data.emails.length > 0) {
+                    finalText += `?? **EMAILS:**\n`;
+                    data.emails.forEach(e => finalText += `  • ${e}\n`);
+                    finalText += `\n`;
+                }
+                if (data.telefones && data.telefones.length > 0) {
+                    finalText += `?? **TELEFONES:**\n`;
+                    data.telefones.forEach(p => finalText += `  • ${p}\n`);
+                }
+            }
+            return finalText.trim() + "\n";
+        }
+
+        function processData() {
+            const input = document.getElementById('inputData').value.trim();
+            if (!input) {
+                alert("Por favor, cole os dados primeiro.");
+                return;
+            }
+
+            // Exibir Loader e Desativar BotÃ£o
+            const btnProcessar = document.getElementById('btnProcessar');
+            const loader = document.getElementById('loader');
+            const outputContainer = document.getElementById('outputContainer');
+
+            btnProcessar.disabled = true;
+            btnProcessar.style.opacity = '0.7';
+            loader.style.display = 'block';
+            outputContainer.style.display = 'none';
+
+            // Usar setTimeout para permitir que a UI (Loading) renderize antes da computaÃ§Ã£o pesada
+            setTimeout(() => {
+                const lines = input.split('\n').filter(line =>
+                    line.trim() !== '' &&
+                    !line.toUpperCase().includes('BENEFÃCIO') &&
+                    !line.toUpperCase().includes('MATRICULA')
+                );
+                window.processedDataArray = [];
+
+                lines.forEach((line) => {
+                    const data = processLine(line);
+                    if (data) {
+                        window.processedDataArray.push(data);
+                    }
+                });
+
+                // ForÃ§ar array filtrada original = completa pela primeira vez
+                window.filteredDataArray = [...window.processedDataArray];
+
+                // Restaurar UI
+                loader.style.display = 'none';
+                btnProcessar.disabled = false;
+                btnProcessar.style.opacity = '1';
+
+                if (window.processedDataArray.length === 0) {
+                    alert("Nenhum dado vÃ¡lido encontrado.");
+                    return;
+                }
+
+                // Configura Dashboard Iniciais
+                populateDashboardUFSelect();
+                populateDashboardBancoSelect();
+                updateDashboardStats();
+                document.getElementById('dashboardContainer').style.display = 'block';
+
+                saveRawData(input);
+
+                currentPage = 1;
+                renderPage(currentPage);
+                outputContainer.scrollIntoView({ behavior: 'smooth' });
+
+            }, 100);
+        }
+
+        function populateDashboardUFSelect() {
+            const ufsSet = new Set();
+            window.processedDataArray.forEach(d => {
+                const state = (d.ufRaw || "").toUpperCase();
+                if (state && state !== "NAO" && state !== "") ufsSet.add(state);
+            });
+            const sel = document.getElementById('filterUF');
+            sel.innerHTML = '<option value="">ðŸ—ºï¸ Todos UF</option>';
+            Array.from(ufsSet).sort().forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.innerText = state;
+                sel.appendChild(opt);
+            });
+        }
+
+        function populateDashboardBancoSelect() {
+            const bancoSet = new Set();
+            window.processedDataArray.forEach(d => {
+                const bancoStr = (d.banco || "").trim();
+                // Avoid empty values or placeholders
+                if (bancoStr && bancoStr !== "NAO" && bancoStr !== "") bancoSet.add(bancoStr);
+            });
+            const sel = document.getElementById('filterBanco');
+            sel.innerHTML = '<option value="">ðŸ¦ Todos Bancos</option>';
+            Array.from(bancoSet).sort().forEach(banco => {
+                const opt = document.createElement('option');
+                opt.value = banco;
+                opt.innerText = banco;
+                sel.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            // Remove acentos da string de busca para facilitar
+            const queryRaw = document.getElementById('filterBusca').value.toLowerCase();
+            const query = queryRaw.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            const fonte = document.getElementById('filterFonte').value;
+            const uf = document.getElementById('filterUF').value.toUpperCase();
+            const banco = document.getElementById('filterBanco').value;
+            const rendaMin = parseFloat(document.getElementById('filterRendaMin').value) || 0;
+            const rendaMax = parseFloat(document.getElementById('filterRendaMax').value) || Infinity;
+
+            window.filteredDataArray = window.processedDataArray.filter(data => {
+                // Filtro Busca (Nome ou CPF)
+                const nomeNormalizado = (data.nome || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                const searchMatch = nomeNormalizado.includes(query) ||
+                    (data.cpf && data.cpf.replace(/\D/g, '').includes(query.replace(/\D/g, '')));
+
+                // Filtro Fonte (INSS vs SIAPE)
+                const fonteMatch = fonte === "" ||
+                    (fonte === "SIAPE" && data.isSiape) ||
+                    (fonte === "INSS" && !data.isSiape);
+
+                // Filtro UF
+                const ufMatch = uf === "" || (data.ufRaw || "").toUpperCase() === uf;
+
+                // Filtro Banco
+                const bancoMatch = banco === "" || (data.banco || "").trim() === banco;
+
+                // Filtro Renda
+                const rendaMatch = data.valorRaw >= rendaMin && data.valorRaw <= rendaMax;
+
+                return searchMatch && fonteMatch && ufMatch && bancoMatch && rendaMatch;
+            });
+
+            updateDashboardStats();
+            currentPage = 1;
+            renderPage(currentPage);
+        }
+
+        function updateDashboardStats() {
+            const total = window.filteredDataArray.length;
+            let comContato = 0;
+
+            window.filteredDataArray.forEach(d => {
+                if ((d.telefones && d.telefones.length > 0) || (d.emails && d.emails.length > 0)) {
+                    comContato++;
+                }
+            });
+
+            document.getElementById('statTotal').innerText = total;
+            document.getElementById('statContatos').innerText = comContato;
+        }
+
+        function renderPage(page) {
+            const outputContainer = document.getElementById('outputContainer');
+            outputContainer.innerHTML = '';
+            outputContainer.style.display = 'block';
+
+            // BotÃµes do topo (Download Todas as Fichas)
+            const topActions = document.createElement('div');
+            topActions.style.textAlign = "right";
+            topActions.style.marginBottom = "20px";
+            topActions.innerHTML = `
+                <button class="btn btn-copy" style="background:#4f46e5; display: inline-flex; width: auto;" onclick="downloadAllTxt(false)">
+                    <span>Baixar TODAS as Fichas (.txt)</span>
+                    <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="margin-left:8px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                </button>
+            `;
+            outputContainer.appendChild(topActions);
+
+            const startIndex = (page - 1) * ITEMS_PER_PAGE;
+            const endIndex = Math.min(startIndex + ITEMS_PER_PAGE, window.filteredDataArray.length);
+
+            // Gerar Cards da PÃ¡gina Atual
+            for (let i = startIndex; i < endIndex; i++) {
+                const data = window.filteredDataArray[i];
+                // Index global relativo Ã  original para os botoes nÃ£o perderem referencia
+                const globalIndex = window.processedDataArray.indexOf(data);
+
+                const card = document.createElement('div');
+                card.className = 'data-card';
+                card.innerHTML = `
+                    <div class="card-content">
+                        <div style="margin-bottom: 10px;"><b>${data.isSiape ? 'âš ï¸ DADOS SIAPE' : 'ðŸ“„ DADOS INSS'}</b></div>
+                        <pre id="result-${globalIndex}">${generateFinalText(data)}</pre>
+                    </div>
+                    <div class="card-actions">
+                        <button class="btn btn-copy" onclick="copyToClipboard(${globalIndex}, this)">
+                            <span>Copiar Resultado</span>
+                        </button>
+                        <button class="btn btn-whatsapp" onclick="copyWhatsAppMessage(${globalIndex}, this)">
+                            <span>Texto WhatsApp</span>
+                        </button>
+                        <button class="btn btn-pdf" onclick="generatePDF(${globalIndex})">
+                            <span>Baixar PDF</span>
+                        </button>
+                    </div>
+                `;
+                // Alerta Visual de Falta de Contato (se nenhum email/telefone)
+                if ((!data.telefones || data.telefones.length === 0) && (!data.emails || data.emails.length === 0)) {
+                    card.style.borderLeft = "6px solid #ef4444";
+                }
+
+                outputContainer.appendChild(card);
+            }
+
+            // AÃ§Ãµes Inferiores: Baixar desta pÃ¡gina e PaginaÃ§Ã£o
+            const bottomActions = document.createElement('div');
+            bottomActions.style.borderTop = "1px solid var(--card-border)";
+            bottomActions.style.marginTop = "20px";
+            bottomActions.style.paddingTop = "20px";
+
+            // BotÃ£o Baixar Fichas da PÃ¡gina Atual
+            const pageDownloadDiv = document.createElement('div');
+            pageDownloadDiv.style.textAlign = "center";
+            pageDownloadDiv.style.marginBottom = "15px";
+            pageDownloadDiv.innerHTML = `
+                <button class="btn" style="background:#8b5cf6; display: inline-flex; width: auto;" onclick="downloadAllTxt(true)">
+                    <span>ðŸ“„ Baixar Fichas Desta PÃ¡gina (${endIndex - startIndex} fichas)</span>
+                </button>
+            `;
+            bottomActions.appendChild(pageDownloadDiv);
+
+            // Controles de PaginaÃ§Ã£o
+            const totalPages = Math.ceil(window.filteredDataArray.length / ITEMS_PER_PAGE);
+            if (totalPages > 1) {
+                const paginationDiv = document.createElement('div');
+                paginationDiv.className = 'pagination';
+
+                paginationDiv.innerHTML = `
+                    <button onclick="changePage(${page - 1})" ${page === 1 ? 'disabled' : ''}>Anterior</button>
+                    <span style="font-weight: 600;">PÃ¡gina ${page} de ${totalPages}</span>
+                    <button onclick="changePage(${page + 1})" ${page === totalPages ? 'disabled' : ''}>PrÃ³xima</button>
+                `;
+                bottomActions.appendChild(paginationDiv);
+            }
+
+            outputContainer.appendChild(bottomActions);
+        }
+
+        window.changePage = function (newPage) {
+            const totalPages = Math.ceil(window.filteredDataArray.length / ITEMS_PER_PAGE);
+            if (newPage < 1 || newPage > totalPages) return;
+            currentPage = newPage;
+            renderPage(currentPage);
+            document.getElementById('outputContainer').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function copyToClipboard(index, btnElem) {
+            const text = document.getElementById(`result-${index}`).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = btnElem.innerHTML;
+                btnElem.innerHTML = `<span>Copiado!</span>`;
+                btnElem.style.background = "#059669";
+                setTimeout(() => {
+                    btnElem.innerHTML = originalText;
+                    btnElem.style.background = "#10b981";
+                }, 2000);
+            });
+        }
+
+        function copyWhatsAppMessage(index, btnElem) {
+            const data = window.processedDataArray[index];
+            if (!data) return;
+
+            // Pega o template do Textarea definido pelo usuÃ¡rio
+            let template = document.getElementById('whatsappTemplate').value;
+
+            // FormataÃ§Ã£o de blocos extra (emails e telefones)
+            let emailBlock = "";
+            if (data.emails && data.emails.length > 0) {
+                emailBlock = `ðŸ“§ *EMAILS:* ${data.emails.join(", ")}`;
+            }
+
+            let phoneBlock = "";
+            if (data.telefones && data.telefones.length > 0) {
+                const uniquePhones = [...new Set(data.telefones)];
+                phoneBlock = `ðŸ“± *TELEFONES:* ${uniquePhones.join(", ")}`;
+            }
+
+            // Substituir variÃ¡veis ou deletar as linhas que ficariam penduradas (vazias) sem as variÃ¡veis
+            let message = template;
+
+            const mapReplace = {
+                "{nome}": data.nome || "",
+                "{cpf}": data.cpf || "",
+                "{nb}": data.nb || "",
+                "{valor}": data.valor || "",
+                "{endereco}": data.endereco || ""
+            };
+
+            for (const [key, value] of Object.entries(mapReplace)) {
+                if (!value) {
+                    // Se a variÃ¡vel Ã© vazia, regex para apagar a linha inteira em que a TAG original estava
+                    const emptyRegex = new RegExp(`^.*${key}.*$\\n?`, 'gm');
+                    message = message.replace(emptyRegex, '');
+                } else {
+                    message = message.replace(new RegExp(key, 'g'), value);
+                }
+            }
+
+            // Emails e Telefones (blocos em vez de in-line)
+            if (!emailBlock) {
+                message = message.replace(/^.*{emails}.*$\n?/gm, '');
+            } else {
+                message = message.replace(/{emails}/g, emailBlock);
+            }
+
+            if (!phoneBlock) {
+                message = message.replace(/^.*{telefones}.*$\n?/gm, '');
+            } else {
+                message = message.replace(/{telefones}/g, phoneBlock);
+            }
+
+            navigator.clipboard.writeText(message).then(() => {
+                const originalContent = btnElem.innerHTML;
+                btnElem.innerHTML = `<span>Mensagem Copiada!</span>`;
+                btnElem.style.background = "#128C7E";
+                setTimeout(() => {
+                    btnElem.innerHTML = originalContent;
+                    btnElem.style.background = "#25D366";
+                }, 2000);
+            });
+        }
+
+        async function previewDummyPDF() {
+            const dummyData = {
+                nome: "MARIA EXEMPLO DE SOUZA",
+                cpf: "123.456.789-00",
+                nb: "9876543210",
+                valor: "R$ 2.450,00",
+                agencia: "1234",
+                conta: "98765-4",
+                endereco: "RUA FICTÃCIA 55 - SÃƒO PAULO"
+            };
+            await generatePDFWorker(dummyData, true);
+        }
+
+        async function generatePDF(index) {
+            const data = window.processedDataArray[index];
+            if (!data) {
+                alert("Nenhum dado processado encontrado.");
+                return;
+            }
+            await generatePDFWorker(data, false);
+        }
+
+        async function generatePDFWorker(data, isPreview) {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            const loadImage = (url) => {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.crossOrigin = "Anonymous";
+                    img.src = url;
+                    img.onload = () => {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0);
+                        resolve(canvas.toDataURL("image/png"));
+                    };
+                    img.onerror = (e) => {
+                        console.error("Error loading image", url, e);
+                        resolve(null);
+                    };
+                });
+            };
+
+            const brasaoUrl = document.getElementById('pdfLogoTop').value;
+            const bbLogoUrl = document.getElementById('pdfLogoBottom').value;
+
+            const [brasaoBase64, bbLogoBase64] = await Promise.all([
+                loadImage(brasaoUrl),
+                loadImage(bbLogoUrl)
+            ]);
+
+            if (!brasaoBase64 && !bbLogoBase64) {
+                console.warn("Uma ou mais imagens falharam em carregar para o PDF. Elas podem ser muito grandes ou estar bloqueadas (CORS).");
+            }
+
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const pageHeight = doc.internal.pageSize.getHeight();
+            const margin = 20;
+
+            let yPos = 20;
+
+            // 1. Logo Topo
+            if (brasaoBase64) {
+                const imgWidth = Number(document.getElementById('topW').value) || 30;
+                const imgHeight = Number(document.getElementById('topH').value) || 30;
+                const x = (pageWidth - imgWidth) / 2;
+                doc.addImage(brasaoBase64, 'PNG', x, yPos, imgWidth, imgHeight);
+                yPos += imgHeight + 15;
+            } else {
+                yPos += 20;
+            }
+
+            // 2. TÃ­tulo do Documento Customizado
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            const title = document.getElementById('pdfTitle').value || "DOCUMENTO OFICIAL";
+            const titleSplit = doc.splitTextToSize(title, pageWidth - 2 * margin);
+            doc.text(titleSplit, pageWidth / 2, yPos, { align: 'center' });
+            yPos += (titleSplit.length * 7) + 10;
+
+            // GeraÃ§Ã£o de Datas
+            const todayObj = new Date();
+            const yesterdayObj = new Date(todayObj);
+            yesterdayObj.setDate(todayObj.getDate() - 1);
+
+            const fmtDate = (d) => `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+            const dataHoje = fmtDate(todayObj);
+            const dataOntem = fmtDate(yesterdayObj);
+
+            // 3. RenderizaÃ§Ã£o Multi-Linhas
+            let rawPdfText = document.getElementById('pdfTemplate').value || "";
+
+            const pdfMapReplace = {
+                "{nome}": data.nome || "-",
+                "{cpf}": data.cpf || "-",
+                "{nb}": data.nb || "-",
+                "{valor}": data.valor || "-",
+                "{endereco}": data.endereco || "-",
+                "{agencia}": data.agencia || "-",
+                "{conta}": data.conta || "-",
+                "{data_hoje}": dataHoje,
+                "{data_ontem}": dataOntem
+            };
+
+            for (const [key, value] of Object.entries(pdfMapReplace)) {
+                rawPdfText = rawPdfText.replace(new RegExp(key, 'g'), value);
+            }
+
+            doc.setFontSize(12);
+
+            const lines = rawPdfText.split('\n');
+            for (let line of lines) {
+                line = line.replace('\r', '');
+                if (line.trim() === '') {
+                    yPos += 7;
+                    continue;
+                }
+
+                if (line.startsWith('*') && line.endsWith('*')) {
+                    doc.setFont("helvetica", "bold");
+                    line = line.substring(1, line.length - 1);
+                } else {
+                    doc.setFont("helvetica", "normal");
+                }
+
+                // ProteÃ§Ã£o de overflow de pÃ¡gina
+                const splitLine = doc.splitTextToSize(line, pageWidth - 2 * margin);
+                if (yPos + (splitLine.length * 7) > pageHeight - 40) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+                doc.text(splitLine, margin, yPos);
+                yPos += splitLine.length * 7;
+            }
+
+            // Footer: Logotipo Base
+            if (bbLogoBase64) {
+                const botWidth = Number(document.getElementById('botW').value) || 40;
+                const botHeight = Number(document.getElementById('botH').value) || 10;
+                const xBB = (pageWidth - botWidth) / 2;
+                const yBB = pageHeight - botHeight - 20;
+                doc.addImage(bbLogoBase64, 'PNG', xBB, yBB, botWidth, botHeight);
+            }
+
+            // Export logic (Preview vs Download)
+            if (isPreview) {
+                const pdfDataUri = doc.output('datauristring');
+                openPreviewModal(pdfDataUri);
+            } else {
+                const filename = `${data.nome.replace(/\s+/g, '_')}_BLOQUEIO.pdf`;
+                doc.save(filename);
+            }
+        }
+
+        function openPreviewModal(dataUri) {
+            let modal = document.getElementById('pdfPreviewModal');
+            if (!modal) {
+                modal = document.createElement('div');
+                modal.id = 'pdfPreviewModal';
+                modal.style.position = 'fixed';
+                modal.style.top = '0';
+                modal.style.left = '0';
+                modal.style.width = '100vw';
+                modal.style.height = '100vh';
+                modal.style.background = 'rgba(0,0,0,0.85)';
+                modal.style.zIndex = '99999';
+                modal.style.display = 'flex';
+                modal.style.alignItems = 'center';
+                modal.style.justifyContent = 'center';
+
+                modal.innerHTML = `
+                    <div style="position:relative; width:90%; height:90%; max-width:1000px; background:white; border-radius:12px; overflow:hidden;">
+                        <!-- Fechar BotÃ£o -->
+                        <button onclick="document.getElementById('pdfPreviewModal').style.display='none'" style="position:absolute; top:10px; right:15px; background:#ef4444; border:none; border-radius:50%; width:35px; height:35px; font-weight:bold; color:white; cursor:pointer; font-size:16px;">X</button>
+                        <iframe id="pdfPreviewFrame" style="width:100%; height:100%; border:none;"></iframe>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+            }
+            document.getElementById('pdfPreviewFrame').src = dataUri;
+            modal.style.display = 'flex';
+        }
+    </script>
+
+</body>
+
+</html>
